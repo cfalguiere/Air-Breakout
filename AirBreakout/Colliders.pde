@@ -1,0 +1,70 @@
+/**
+ * interactor between a Brick and the ball
+ * Brick vanish when it's hit by the ball
+ */
+class BrickBallCollider extends Collider<BrickBeing, BallBeing> {
+  private GameController gameController; 
+  
+  BrickBallCollider(GameController aGameController) {
+    super();
+    gameController = aGameController;
+  }
+  
+  void handle(BrickBeing brick, BallBeing ball) {
+    if (! brick.isOut) {
+      ball.hitABeing(brick.getBoundingBox());
+      gameController.breakBrick(brick);
+    }
+  }
+}
+
+/**
+ * interactor between a Racket and the ball
+ * ball bounce on the racket
+ */
+class RacketBallCollider extends Collider<RacketBeing, BallBeing> {
+  void handle(RacketBeing racket, BallBeing ball) {
+    ball.hitARacket(racket);
+  }
+}
+
+/**
+ * interactor between a Brick and the racket
+ * game over
+ */
+class BrickRacketCollider extends Collider<BrickBeing, RacketBeing> {
+  private GameController gameController; 
+  
+  BrickRacketCollider(GameController aGameController) {
+    super();
+    gameController = aGameController;
+  }
+
+  void handle(BrickBeing brick, RacketBeing racket) {
+    gameController.gameOver();
+  }
+}
+
+/**
+ * interactor between a Bricks and the ground
+ * Ball bounce over the wall
+ */
+class BrickGroundInteractor extends Interactor<BrickBeing, BoardBeing> {
+  private GameController gameController; 
+  
+  BrickGroundInteractor(GameController aGameController) {
+    super();
+    gameController = aGameController;
+  }
+
+  boolean detect(BrickBeing brick, BoardBeing board) {
+    boolean isOn = ! brick.isAway;
+    boolean hitGround = ! board.getBoundingBox().contains(brick.getBoundingBox());
+    return isOn && hitGround;
+  }
+
+  void handle(BrickBeing brick, BoardBeing board) {
+    gameController.removeBrick(brick);
+    gameController.gameOver();
+  }
+}
